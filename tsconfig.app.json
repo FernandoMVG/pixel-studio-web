@@ -16,6 +16,9 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
+    /* Tipos de pixel-api (solo tipos, se borran al compilar) */
+    "paths": { "@api": ["../pixel-api/src/contract.ts"] },
+
     /* Linting */
     "noUnusedLocals": true,
     "noUnusedParameters": true,
