@@ -34,7 +34,6 @@ export function ProjectorDialog({ project, anim, onClose }: Props) {
   }, [playing, fps]);
 
   const frame = frameAt(holds, mod(pos));
-  const cycle = Math.floor(pos / total);
 
   /** Salta al inicio del cuadro anterior o siguiente (no al tic), y pausa. */
   const jump = (d: 1 | -1) => {
@@ -64,12 +63,10 @@ export function ProjectorDialog({ project, anim, onClose }: Props) {
         </div>
 
         <div className="cine-screen">
-          <div className="cine-frame px">
+          <div className="cine-frame">
             <Sprite project={project} animation={anim.name} frame={frame} size={size} />
           </div>
         </div>
-        {/* El haz destella cada vez que entra un cuadro nuevo bajo la lámpara. */}
-        <div className="cine-beam" key={`${cycle}:${frame}`} aria-hidden="true" />
 
         <div className="reel-wrap" aria-hidden="true">
           <ol className="reel" style={{ translate: `${-pos * STEP}px 0` }}>
