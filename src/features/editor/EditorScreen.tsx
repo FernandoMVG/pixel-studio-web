@@ -13,6 +13,7 @@ import { PaletteDialog } from './PaletteDialog.tsx';
 import { PalettePanel } from './PalettePanel.tsx';
 import { applyPatch } from './patches.ts';
 import { PreviewPanel } from './PreviewPanel.tsx';
+import { ProjectorDialog } from './ProjectorDialog.tsx';
 import { ShortcutsDialog } from './ShortcutsDialog.tsx';
 import { Stage } from './Stage.tsx';
 import { Timeline } from './Timeline.tsx';
@@ -22,7 +23,7 @@ import type { Author, Cell, HistoryEntry, Send } from './types.ts';
 import './editor.css';
 
 type Load = { status: 'loading' } | { status: 'offline' } | { status: 'missing' } | { status: 'error'; message: string } | { status: 'ready' };
-type Dlg = 'palette' | 'shortcuts' | 'animation' | null;
+type Dlg = 'palette' | 'shortcuts' | 'animation' | 'screen' | null;
 
 const AGENT = 'agente';
 const clamp = (n: number, a: number, b: number) => Math.min(b, Math.max(a, n));
@@ -302,7 +303,7 @@ export function EditorScreen({ projectId }: { projectId: string }) {
         />
         <aside className="side" aria-label="Paneles">
           <PalettePanel palette={palette} color={activeColor} onColor={setColor} onEdit={() => setDialog('palette')} />
-          <PreviewPanel project={project} animation={anim.name} frame={frameIdx} playing={playing} />
+          <PreviewPanel project={project} animation={anim.name} frame={frameIdx} playing={playing} onScreen={() => { setPlaying(false); setDialog('screen'); }} />
           <HistoryPanel entries={hist} />
         </aside>
       </div>
@@ -331,6 +332,7 @@ export function EditorScreen({ projectId }: { projectId: string }) {
         return errs;
       }} />}
       {dialog === 'shortcuts' && <ShortcutsDialog onClose={() => setDialog(null)} />}
+      {dialog === 'screen' && <ProjectorDialog project={project} anim={anim} onClose={() => setDialog(null)} />}
       {dialog === 'animation' && <NewAnimationDialog onClose={() => setDialog(null)} onCreate={async (name) => {
         const errs = await send([{ type: 'addAnimation', name }], { quiet: true });
         if (!errs) { setAnimName(name); setFrame(0); }

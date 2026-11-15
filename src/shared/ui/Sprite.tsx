@@ -13,7 +13,7 @@ type Props = {
 };
 
 /** Cuadro que toca en el tic `tick`: cada cuadro se queda tantos tics como su duración. */
-function frameAt(holds: number[], tick: number) {
+export function frameAt(holds: number[], tick: number) {
   let t = tick % holds.reduce((a, b) => a + b, 0);
   let i = 0;
   while (t >= holds[i]!) t -= holds[i++]!;

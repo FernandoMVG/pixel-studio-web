@@ -1,0 +1,46 @@
+/* Sala de proyección: siempre a oscuras, en los dos temas. La luz (--luz) es la lámpara del proyector. */
+.dlg-cine{--room:#0E0F1D;--film:#1B1812;--film-edge:#2C271D;--step:76px;--reel-h:92px;
+  width:min(960px,calc(100vw - 32px));max-height:calc(100vh - 32px);background:var(--room);color:#E6E8F5;color-scheme:dark;
+  box-shadow:var(--shadow-float),0 0 0 1px #2B3057;overflow:hidden}
+.dlg-cine::backdrop{background:rgb(4 5 13 / .78)}
+.cine-sub{margin-left:6px;font-weight:400;font-size:14px;color:#9EA3C7}
+.dlg-cine .icon-btn{color:#C9CCE6}
+.dlg-cine .icon-btn:hover{background:rgb(255 255 255 / .1);color:#fff}
+.dlg-cine .icon-btn:disabled{opacity:.35}
+.dlg-cine .prev .i{scale:-1 1}
+
+/* Pantalla: superficie de dibujo, siempre sobre damero claro, con el resplandor de la proyección. */
+.cine-screen{display:grid;place-items:center;padding:8px 24px 0}
+.cine-frame{--s:4px;display:grid;place-items:center;padding:16px;background:repeating-conic-gradient(#fff 0 25%,#e3e6f1 0 50%) 0 0/16px 16px}
+.cine-screen{filter:drop-shadow(0 0 28px rgb(255 197 61 / .28))}
+
+/* Haz de luz de la lámpara (abajo, estrecho) a la pantalla (arriba, ancho). */
+.cine-beam{height:40px;width:min(420px,70%);margin:0 auto;clip-path:polygon(0 0,100% 0,54% 100%,46% 100%);
+  background:linear-gradient(to top,rgb(255 197 61 / .5),rgb(255 197 61 / .04));opacity:.6;animation:cine-flash 260ms ease-out}
+@keyframes cine-flash{from{opacity:1;filter:brightness(1.5)}to{opacity:.6;filter:none}}
+
+/* Tira de película: cada fotograma se coloca por su tic absoluto y la tira entera se desplaza. */
+.reel-wrap{position:relative;height:var(--reel-h);overflow:hidden;
+  mask-image:linear-gradient(90deg,transparent,#000 16%,#000 84%,transparent)}
+.reel{position:absolute;top:0;bottom:0;left:calc(50% - var(--step) / 2);margin:0;padding:0;list-style:none;transition:translate 140ms var(--ease)}
+.reel li{position:absolute;top:0;width:var(--step);height:var(--reel-h);display:grid;place-items:center;background:var(--film);box-shadow:inset -1px 0 0 var(--film-edge)}
+/* Perforaciones arriba y abajo: 4 por fotograma, viajan con la película. */
+.reel li::before,.reel li::after{content:"";position:absolute;left:0;right:0;height:8px;
+  background:repeating-linear-gradient(90deg,transparent 0 5px,var(--room) 5px 13px,transparent 13px 19px)}
+.reel li::before{top:6px}
+.reel li::after{bottom:6px}
+.reel .fc{display:grid;place-items:center;width:56px;height:56px;background:repeating-conic-gradient(#fff 0 25%,#e3e6f1 0 50%) 0 0/7px 7px;
+  filter:brightness(.4) saturate(.6);transition:filter 140ms var(--ease)}
+.reel li.on .fc{filter:none}
+/* Ventanilla de la lámpara: fija en el centro, ilumina el fotograma que pasa por ella. */
+.gate{position:absolute;top:0;bottom:0;left:50%;width:var(--step);translate:-50% 0;pointer-events:none;
+  box-shadow:inset 0 0 0 2px var(--luz),0 0 28px var(--glow);background:radial-gradient(closest-side,rgb(255 197 61 / .16),transparent)}
+
+.cine-ctl{display:flex;align-items:center;gap:6px;padding:12px 16px 16px}
+.cine-ctl .btn-primary{min-width:136px}
+.cine-count{margin-left:10px;font:500 13px var(--f-data);color:#E6E8F5}
+.cine-count b{color:var(--luz)}
+.cine-meta{margin-left:auto;font-size:13px;color:#9EA3C7}
+.cine-meta .num{font-family:var(--f-data);color:#E6E8F5}
+
+@media (prefers-reduced-motion:reduce){.reel,.reel .fc{transition:none}.cine-beam{animation:none}}
