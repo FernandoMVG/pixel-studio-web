@@ -9,6 +9,7 @@ import { ProjectsScreen } from './features/projects/ProjectsScreen.tsx';
 import { EditorScreen } from './features/editor/EditorScreen.tsx';
 import { AgentScreen } from './features/agent/AgentScreen.tsx';
 import { ExportScreen } from './features/export/ExportScreen.tsx';
+import { SearchDialog } from './features/search/SearchDialog.tsx';
 import { SettingsScreen } from './features/settings/SettingsScreen.tsx';
 
 function toggleTheme() {
@@ -67,6 +68,18 @@ export default function App() {
     if (editing) setLastProject(editing);
   }, [editing]);
   const last = editing ?? getLastProject();
+  const [searching, setSearching] = useState(false);
+  useEffect(() => {
+    const on = (e: KeyboardEvent) => {
+      if (!((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k')) return;
+      const t = e.target as HTMLElement;
+      if (t.matches?.('input, textarea, select, [contenteditable]') && !t.closest('dialog.cmd')) return;
+      e.preventDefault();
+      setSearching((s) => !s);
+    };
+    addEventListener('keydown', on);
+    return () => removeEventListener('keydown', on);
+  }, []);
   // `#/editor` sin proyecto muestra la galería: el riel debe decir lo mismo.
   const active = page === 'editor' && !id ? 'proyectos' : page;
 
@@ -83,6 +96,7 @@ export default function App() {
             : <ProjectsScreen />}
         </main>
       </div>
+      {searching && <SearchDialog onClose={() => setSearching(false)} />}
     </ToastProvider>
   );
 }

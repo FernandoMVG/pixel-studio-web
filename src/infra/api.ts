@@ -1,4 +1,4 @@
-import type { AgentPermissions, ApiError, Command, Patch, Project, Settings } from '@api';
+import type { ActivityEntry, AgentPermissions, ApiError, Command, Patch, Project, Settings } from '@api';
 
 export const API_URL: string = import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:4317';
 
@@ -55,6 +55,7 @@ export const api = {
   undo: async (id: string) => (await request<{ patches: Patch[] }>(`/projects/${id}/undo`, { method: 'POST', body: { sessionId: SESSION_ID } })).patches,
   redo: async (id: string) => (await request<{ patches: Patch[] }>(`/projects/${id}/redo`, { method: 'POST', body: { sessionId: SESSION_ID } })).patches,
 
+  getActivity: () => request<{ lastAt: string | null; entries: ActivityEntry[] }>('/agent/activity'),
   getSettings: () => request<Settings>('/settings'),
   updateAgent: (patch: Partial<AgentPermissions>) => request<Settings>('/settings/agent', { method: 'PUT', body: patch }),
 

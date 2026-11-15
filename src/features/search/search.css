@@ -1,0 +1,5 @@
+dialog.cmd{width:min(560px,calc(100vw - 32px));margin-top:12vh}
+.cmd-list{padding:0 10px 10px;max-height:420px;overflow:auto}
+.cmd-list .menu{position:static;box-shadow:none;padding:0;background:none}
+.cmd-list .menu a{height:40px}
+.cmd-list .menu a[aria-selected="true"]{background:var(--sunken)}

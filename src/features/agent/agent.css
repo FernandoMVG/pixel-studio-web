@@ -1,0 +1,33 @@
+.ag-head{margin-bottom:24px}
+.ag-head h1{font-size:44px;margin-bottom:6px}
+.ag-head .muted{max-width:60ch}
+.ag{display:grid;grid-template-columns:340px minmax(0,1fr) 300px;gap:16px;align-items:start}
+.ag h2.t{font:600 15px var(--f-ui)}
+.conn{display:grid;gap:14px;padding:18px;border-radius:var(--r4);background:var(--surface);box-shadow:0 0 0 1px var(--line)}
+.conn-state{display:flex;align-items:center;gap:12px}
+.conn-state .lamp{width:14px;height:14px;background:var(--luz);box-shadow:0 0 12px var(--luz)}
+.conn-state.off .lamp{background:var(--line);box-shadow:none}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:13px;margin:0}
+.kv dt{color:var(--ink-3)}
+.kv dd{margin:0;font-family:var(--f-data);font-size:12.5px;overflow-wrap:anywhere}
+.code{position:relative;margin:0;padding:12px 44px 12px 14px;border-radius:var(--r2);background:var(--sunken);font:12.5px/1.55 var(--f-data);overflow-x:auto;white-space:pre-wrap;overflow-wrap:anywhere}
+.code .icon-btn{position:absolute;top:2px;right:2px}
+.perm{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13.5px;min-height:40px}
+.log{list-style:none;margin:0;padding:0;display:grid}
+.log li{display:grid;grid-template-columns:70px 22px minmax(0,1fr);gap:10px;padding:12px 8px;border-bottom:1px solid var(--line);align-items:start}
+.log time{font:12px var(--f-data);color:var(--ink-3);padding-top:2px}
+.log .st{display:grid;place-items:center;width:22px;height:22px;border-radius:var(--r1)}
+.log .ok .st{background:var(--ok-soft);color:var(--ok)}
+.log .err .st{background:var(--err-soft);color:var(--err)}
+.log .fixed .st{background:var(--agente-soft);color:var(--agente)}
+.log .say{font-weight:500}
+.log code{font:12px var(--f-data);color:var(--ink-3)}
+.log .args{color:var(--ink-3);font:12px var(--f-data);margin-left:6px}
+.log p{margin:2px 0 4px;font-size:13px;color:var(--ink-2);overflow-wrap:anywhere}
+.log .err p{color:var(--err);font-weight:500}
+.txtgrid{margin:0;padding:12px;border-radius:var(--r2);background:var(--hard);color:#d9dcf2;font:13px/1.25 var(--f-data);letter-spacing:.32em;overflow-x:auto}
+.txtgrid .n{color:#6c7099;letter-spacing:0;margin-right:10px;user-select:none}
+.legend{display:grid;gap:6px;margin-top:10px;font-size:13px}
+.legend div{display:flex;align-items:center;gap:8px}
+.legend code{font:600 12.5px var(--f-data);width:12px}
+@media (max-width:1200px){.ag{grid-template-columns:minmax(0,1fr)}}

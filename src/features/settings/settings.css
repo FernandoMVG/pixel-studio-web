@@ -1,0 +1,10 @@
+.prefs{max-width:820px}
+.prefs h1{font-size:44px;margin-bottom:6px}
+.prefs section{margin-top:32px}
+.prefs h2{font:600 15px var(--f-ui);margin-bottom:8px}
+.set-list{border-radius:var(--r4);background:var(--surface);box-shadow:0 0 0 1px var(--line)}
+.set{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 16px}
+.set+.set{border-top:1px solid var(--line)}
+.set b{display:block;font-weight:500}
+.set p{font-size:13px;color:var(--ink-3)}
+@media (max-width:900px){.set{grid-template-columns:1fr}}
