@@ -108,7 +108,7 @@ export function EditorScreen({ projectId }: { projectId: string }) {
     const off = subscribe(
       projectId,
       (m) => {
-        if (m.sessionId === SESSION_ID) return; // ya se aplicó con la respuesta HTTP
+        if (m.type !== 'patches' || m.sessionId === SESSION_ID) return; // ya se aplicó con la respuesta HTTP
         const by: Author = m.sessionId === AGENT ? 'agente' : 'otra';
         confirm(m.patches, by);
         if (by !== 'agente') return;

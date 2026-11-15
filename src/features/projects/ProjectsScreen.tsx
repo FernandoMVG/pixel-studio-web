@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { Project } from '@api';
 import { api, ApiOfflineError } from '../../infra/api.ts';
+import { subscribe } from '../../infra/live.ts';
 import { getLastProject } from '../../shared/router.ts';
 import { Icon } from '../../shared/ui/Icons.tsx';
 import { Offline } from '../../shared/ui/Offline.tsx';
@@ -73,6 +74,23 @@ export function ProjectsScreen() {
     );
   }, []);
   useEffect(load, [load]);
+
+  // En vivo: lo que crea, borra o dibuja otra sesión (el agente) aparece sin recargar. Se pide la lista como mucho cada 500 ms.
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let wasClosed = false;
+    const refresh = () => {
+      timer ??= setTimeout(() => {
+        timer = undefined;
+        api.listProjects().then((projects) => setState({ status: 'ready', projects }), () => {});
+      }, 500);
+    };
+    const off = subscribe('*', refresh, (s) => {
+      if (s === 'closed') wasClosed = true;
+      else if (s === 'open' && wasClosed) { wasClosed = false; refresh(); }
+    });
+    return () => { off(); clearTimeout(timer); };
+  }, []);
 
   if (state.status === 'offline') return <Offline onRetry={load} />;
 

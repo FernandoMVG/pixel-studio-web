@@ -5,6 +5,7 @@ export type LiveStatus = 'connecting' | 'open' | 'closed';
 
 /**
  * Escucha los parches de un proyecto (de cualquier sesión: la web, el agente…) y reconecta solo.
+ * Con `'*'` escucha todos los proyectos, más las altas y bajas.
  * Devuelve la función para dejar de escuchar.
  */
 export function subscribe(projectId: string, onMessage: (m: WsMessage) => void, onStatus: (s: LiveStatus) => void = () => {}): () => void {
