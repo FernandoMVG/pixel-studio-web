@@ -22,6 +22,9 @@
 .cv-inner .onion{opacity:.28}
 .gridlines{position:absolute;inset:0;pointer-events:none;background:linear-gradient(rgb(0 0 0 / .14) 1px,transparent 1px) 0 0/var(--z) var(--z),linear-gradient(90deg,rgb(0 0 0 / .14) 1px,transparent 1px) 0 0/var(--z) var(--z)}
 .gridlines.off{display:none}
+.cv-inner[data-cursor=move]{cursor:move}
+.sel-hint{font-family:var(--f-ui)}
+.sel-box{position:absolute;pointer-events:none;outline:2px dashed var(--luz);outline-offset:-1px;box-shadow:0 0 0 1px var(--ink),inset 0 0 0 1px var(--ink)}
 .hover-cell{position:absolute;width:var(--z);height:var(--z);box-shadow:inset 0 0 0 2px var(--ink);pointer-events:none}
 .agent-cell{position:absolute;width:var(--z);height:var(--z);background:color-mix(in oklab,var(--agente) 35%,transparent);box-shadow:inset 0 0 0 2px var(--agente),0 0 10px var(--agente);pointer-events:none}
 .stage-foot{position:absolute;left:16px;bottom:12px;display:flex;gap:14px;font:500 12px var(--f-data);color:var(--ink-2);background:color-mix(in oklab,var(--surface) 85%,transparent);padding:6px 10px;border-radius:var(--r2);pointer-events:none}

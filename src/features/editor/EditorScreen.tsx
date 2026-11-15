@@ -16,7 +16,7 @@ import { PreviewPanel } from './PreviewPanel.tsx';
 import { ShortcutsDialog } from './ShortcutsDialog.tsx';
 import { Stage } from './Stage.tsx';
 import { Timeline } from './Timeline.tsx';
-import { TOOLS, type Tool } from './tools.ts';
+import { moveCells, shiftRect, TOOLS, type Rect, type Tool } from './tools.ts';
 import { Tools } from './Tools.tsx';
 import type { Author, Cell, HistoryEntry, Send } from './types.ts';
 import './editor.css';
@@ -61,6 +61,7 @@ export function EditorScreen({ projectId }: { projectId: string }) {
   const [hist, setHist] = useState<HistoryEntry[]>([]);
   const [agent, setAgent] = useState<{ frame: number } | null>(null);
   const [flash, setFlash] = useState<Cell[]>([]);
+  const [sel, setSel] = useState<Rect | null>(null);
   const histId = useRef(0);
   const agentTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const flashTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -175,6 +176,22 @@ export function EditorScreen({ projectId }: { projectId: string }) {
     void send([{ type: 'setRows', animation: anim.name, frame: frameIdx, startRow: 0, rows: rows.map((r) => [...r].reverse().join('')) }]);
   };
 
+  /** Flechas: mueve la selección un píxel (Alt copia). Con un envío en curso se ignora, para no calcular sobre filas viejas. */
+  const nudge = (dx: number, dy: number, copy: boolean) => {
+    const rows = anim?.frames[frameIdx];
+    if (!anim || !rows || !sel || pending) return;
+    const cells = moveCells(rows, sel, dx, dy, copy);
+    setSel(shiftRect(sel, dx, dy, project!.width, project!.height));
+    if (cells.length) void send([{ type: 'setPixels', animation: anim.name, frame: frameIdx, pixels: cells }]);
+  };
+  const clearSel = () => {
+    const rows = anim?.frames[frameIdx];
+    if (!anim || !rows || !sel) return;
+    const pixels: Cell[] = [];
+    for (let y = sel.y0; y <= sel.y1; y++) for (let x = sel.x0; x <= sel.x1; x++) if (rows[y]![x] !== '.') pixels.push({ x, y, color: '.' });
+    if (pixels.length) void send([{ type: 'setPixels', animation: anim.name, frame: frameIdx, pixels }]);
+  };
+
   const setZ = (d: number) => setZoom((z) => clamp(z + d, 8, 40));
   const keys = Object.keys(palette);
 
@@ -188,7 +205,14 @@ export function EditorScreen({ projectId }: { projectId: string }) {
     if (e.ctrlKey || e.metaKey) {
       if (k === 'z') { e.preventDefault(); void step(e.shiftKey ? 'redo' : 'undo'); }
       else if (k === 'y') { e.preventDefault(); void step('redo'); }
+      else if (k === 'a') { e.preventDefault(); setTool('select'); setSel({ x0: 0, y0: 0, x1: project!.width - 1, y1: project!.height - 1 }); }
       return;
+    }
+    if (tool === 'select' && sel) {
+      const dir = ({ arrowleft: [-1, 0], arrowright: [1, 0], arrowup: [0, -1], arrowdown: [0, 1] } as Record<string, [number, number]>)[k];
+      if (dir) { e.preventDefault(); return nudge(dir[0], dir[1], e.altKey); }
+      if (k === 'escape') return setSel(null);
+      if (k === 'delete' || k === 'backspace') { e.preventDefault(); return clearSel(); }
     }
     if (e.altKey) return;
     const hit = TOOLS.find((x) => x.key.toLowerCase() === k);
@@ -267,6 +291,8 @@ export function EditorScreen({ projectId }: { projectId: string }) {
           onion={onion}
           flash={agent && flash.length ? flash : []}
           agent={agent}
+          sel={sel}
+          onSel={setSel}
           onSend={send}
           onPick={(c) => { setColor(c); setTool('pencil'); }}
         />

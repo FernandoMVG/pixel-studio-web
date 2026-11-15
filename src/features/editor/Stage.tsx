@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react';
 import type { Animation, Frame, Project } from '@api';
 import { fillCells, paintCells } from './patches.ts';
-import { lineCells, rectCells, type Tool } from './tools.ts';
+import { inRect, lineCells, moveCells, rectBetween, rectCells, shiftRect, type Rect, type Tool } from './tools.ts';
 import type { Cell, Draft, Send } from './types.ts';
 
 type Props = {
@@ -16,6 +16,9 @@ type Props = {
   /** Celdas que acaba de cambiar el agente (se resaltan ~1 s). */
   flash: Cell[];
   agent: { frame: number } | null;
+  /** Selección activa (herramienta Selección). */
+  sel: Rect | null;
+  onSel: (r: Rect | null) => void;
   onSend: Send;
   onPick: (color: string) => void;
 };
@@ -34,13 +37,17 @@ function draw(cv: HTMLCanvasElement | null, rows: Frame | undefined, project: Pr
   });
 }
 
-export function Stage({ project, anim, frame, tool, color, zoom, grid, onion, flash, agent, onSend, onPick }: Props) {
+export function Stage({ project, anim, frame, tool, color, zoom, grid, onion, flash, agent, sel, onSel, onSend, onPick }: Props) {
   const { width: w, height: h } = project;
   const cvRef = useRef<HTMLCanvasElement>(null);
   const onionRef = useRef<HTMLCanvasElement>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [hover, setHover] = useState<{ x: number; y: number } | null>(null);
   const drag = useRef<{ start: { x: number; y: number }; last: { x: number; y: number }; cells: Map<string, Cell> } | null>(null);
+  /** Arrastre de la herramienta Selección: marcar un rectángulo o mover (copiar con Alt) el ya marcado. */
+  const selDrag = useRef<{ mode: 'marquee' | 'move'; start: { x: number; y: number }; copy: boolean } | null>(null);
+  const [offset, setOffset] = useState<{ dx: number; dy: number } | null>(null);
+  const selecting = tool === 'select';
 
   const rows = anim.frames[frame];
   const showDraft = draft && draft.animation === anim.name && draft.frame === frame ? draft.cells : null;
@@ -75,6 +82,12 @@ export function Stage({ project, anim, frame, tool, color, zoom, grid, onion, fl
     const p = cellAt(e, false);
     if (!p) return;
     if (tool === 'picker') return onPick(rows[p.y]![p.x]!);
+    if (selecting) {
+      e.currentTarget.setPointerCapture(e.pointerId);
+      if (sel && inRect(sel, p)) selDrag.current = { mode: 'move', start: p, copy: e.altKey };
+      else { selDrag.current = { mode: 'marquee', start: p, copy: false }; onSel(rectBetween(p, p)); }
+      return;
+    }
     if (tool === 'bucket') {
       const cells = fillCells(rows, p.x, p.y, color);
       if (!cells.length) return;
@@ -91,6 +104,17 @@ export function Stage({ project, anim, frame, tool, color, zoom, grid, onion, fl
   const move = (e: PointerEvent<HTMLDivElement>, forced?: string) => {
     const d = drag.current;
     setHover(cellAt(e, false));
+    const s = selDrag.current;
+    if (s && rows) {
+      const p = cellAt(e, true)!;
+      if (s.mode === 'marquee') onSel(rectBetween(s.start, p));
+      else if (sel) {
+        const dx = p.x - s.start.x, dy = p.y - s.start.y;
+        setOffset({ dx, dy });
+        show(moveCells(rows, sel, dx, dy, s.copy));
+      }
+      return;
+    }
     if (!d) return;
     const c = forced ?? (tool === 'eraser' ? '.' : color);
     if (tool === 'pencil' || tool === 'eraser') {
@@ -108,11 +132,21 @@ export function Stage({ project, anim, frame, tool, color, zoom, grid, onion, fl
     const d = drag.current;
     drag.current = null;
     if (d) commit([...d.cells.values()]);
+    const s = selDrag.current;
+    selDrag.current = null;
+    if (s?.mode === 'move' && sel && rows && offset) {
+      commit(moveCells(rows, sel, offset.dx, offset.dy, s.copy));
+      onSel(shiftRect(sel, offset.dx, offset.dy, w, h));
+    }
+    setOffset(null);
   };
   const cancel = () => {
     drag.current = null;
+    selDrag.current = null;
+    setOffset(null);
     setDraft(null);
   };
+  const box = selecting && sel ? { x0: sel.x0 + (offset?.dx ?? 0), y0: sel.y0 + (offset?.dy ?? 0), x1: sel.x1 + (offset?.dx ?? 0), y1: sel.y1 + (offset?.dy ?? 0) } : null;
 
   const style = { ['--w' as string]: w, ['--h' as string]: h, ['--z' as string]: `${zoom}px` };
   return (
@@ -127,6 +161,7 @@ export function Stage({ project, anim, frame, tool, color, zoom, grid, onion, fl
         <div className="cv-wrap px" style={style}>
           <div
             className="cv-inner"
+            data-cursor={selecting && sel && hover && inRect(sel, hover) ? 'move' : undefined}
             onPointerDown={down}
             onPointerMove={(e) => move(e)}
             onPointerUp={up}
@@ -137,13 +172,14 @@ export function Stage({ project, anim, frame, tool, color, zoom, grid, onion, fl
             <canvas ref={cvRef} width={w} height={h} role="img" aria-label={`Lienzo de ${w} por ${h} píxeles`} />
             <div className={`gridlines${grid ? '' : ' off'}`} />
             {flash.map((c) => <div key={`${c.x},${c.y}`} className="agent-cell" style={{ left: c.x * zoom, top: c.y * zoom }} />)}
-            {hover && <div className="hover-cell" style={{ left: hover.x * zoom, top: hover.y * zoom }} />}
+            {box && <div className="sel-box" style={{ left: box.x0 * zoom, top: box.y0 * zoom, width: (box.x1 - box.x0 + 1) * zoom, height: (box.y1 - box.y0 + 1) * zoom }} />}
+            {hover && !selecting && <div className="hover-cell" style={{ left: hover.x * zoom, top: hover.y * zoom }} />}
           </div>
         </div>
       </div>
       <div className="stage-foot num">
         <span>{hover ? `x ${hover.x}  y ${hover.y}` : 'x –  y –'}</span>
-        <span>{w} × {h}</span>
+        {selecting ? <span className="sel-hint">{sel ? 'Arrastra para mover · Alt copia · flechas · Supr borra · Esc suelta' : 'Arrastra para seleccionar · Ctrl+A todo'}</span> : <span>{w} × {h}</span>}
         <span>cuadro {frame + 1} de {anim.frames.length}</span>
       </div>
     </div>
