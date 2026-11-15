@@ -9,7 +9,7 @@ export function FeaturedProject({ project }: { project: Project }) {
       <div className="cart-wrap">
         <div className="cart px">
           <div className="win px">
-            <Sprite project={project} zoom={12} play="always" />
+            <Sprite project={project} size={192} play="always" />
           </div>
           <span className="lab">{project.name}</span>
         </div>

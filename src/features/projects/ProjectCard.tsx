@@ -26,7 +26,7 @@ export function ProjectCard({ project, onDelete }: { project: Project; onDelete:
     <li className="card">
       <a className="card-hit" href={`#/editor/${project.id}`} aria-label={`Abrir ${project.name}`} />
       <div className="thumb px">
-        <Sprite project={project} zoom={6} play="hover" />
+        <Sprite project={project} size={96} play="hover" />
       </div>
       <div className="card-body">
         <h3>{project.name}</h3>

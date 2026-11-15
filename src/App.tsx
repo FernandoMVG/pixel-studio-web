@@ -31,7 +31,7 @@ function Brand({ id }: { id: string | null }) {
   }, [id]);
   return (
     <a className="brand" href="#/proyectos" aria-label="Pixel Studio, ir a proyectos">
-      {project ? <Sprite project={project} zoom={2.5} play="always" /> : <Icon name="palette" />}
+      {project ? <Sprite project={project} size={40} play="always" /> : <Icon name="palette" />}
     </a>
   );
 }

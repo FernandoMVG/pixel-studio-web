@@ -6,13 +6,16 @@ type Props = {
   animation?: string;
   frame?: number;
   zoom?: number;
+  /** Lado de la caja en px: ajusta el zoom para que el lado mayor del lienzo mida eso (manda sobre `zoom`). */
+  size?: number;
   /** 'hover' reproduce solo mientras el puntero está sobre el ancestro `.card`. */
   play?: 'always' | 'hover' | false;
 };
 
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-export function Sprite({ project, animation, frame = 0, zoom = 4, play = false }: Props) {
+export function Sprite({ project, animation, frame = 0, zoom: z = 4, size, play = false }: Props) {
+  const zoom = size ? size / Math.max(project.width, project.height) : z;
   const ref = useRef<HTMLCanvasElement>(null);
   const [hover, setHover] = useState(false);
   const anim = project.animations.find((a) => a.name === animation) ?? project.animations[0]!;

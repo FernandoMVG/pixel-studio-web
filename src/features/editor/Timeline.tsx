@@ -64,7 +64,7 @@ export function Timeline({ project, anim, frame, playing, onAnim, onFrame, onPla
         {anim.frames.map((_, i) => (
           <li key={i} style={{ display: 'flex' }}>
             <button className="frame" type="button" aria-current={i === frame} aria-label={`Cuadro ${i + 1}`} onClick={() => onFrame(i)}>
-              <span className="fc"><Sprite project={project} animation={anim.name} frame={i} zoom={3} /></span>
+              <span className="fc"><Sprite project={project} animation={anim.name} frame={i} size={48} /></span>
               <span className="num">{i + 1}</span>
             </button>
             {i === frame && (
