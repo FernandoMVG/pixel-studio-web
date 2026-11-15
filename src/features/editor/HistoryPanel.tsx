@@ -4,7 +4,7 @@ const WHO = { tu: 'Tú', agente: 'Agente', otra: 'Otra pestaña' } as const;
 
 export function HistoryPanel({ entries }: { entries: HistoryEntry[] }) {
   return (
-    <section className="panel">
+    <section className="panel panel-hist">
       <div className="panel-h"><h2>Historial</h2><span className="hint num">{entries.length ? `${entries.length} ${entries.length === 1 ? 'cambio' : 'cambios'}` : ''}</span></div>
       <ul className="hist" aria-label="Últimos cambios">
         {entries.length === 0 && <li className="faint">Cada cambio aparece aquí, el más reciente arriba.</li>}

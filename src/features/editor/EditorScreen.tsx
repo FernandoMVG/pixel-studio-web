@@ -74,7 +74,9 @@ export function EditorScreen({ projectId }: { projectId: string }) {
         setLoad({ status: 'ready' });
         if (first.current) {
           first.current = false;
-          setZoom(clamp(Math.min(28, Math.floor(480 / Math.max(p.width, p.height))), 8, 40));
+          // Zoom inicial para que el lienzo quepa entero: alto de ventana menos cabecera y línea de tiempo (~300 px), ancho menos riel, herramientas y panel (~480 px).
+          const room = Math.min(innerHeight - 300, innerWidth - 480, 480);
+          setZoom(clamp(Math.min(28, Math.floor(room / Math.max(p.width, p.height))), 8, 40));
           setColor(Object.keys(p.palette)[0] ?? '.');
         }
       },

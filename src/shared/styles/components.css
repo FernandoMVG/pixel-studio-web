@@ -3,6 +3,8 @@
 
 /* ---------- shell ---------- */
 #root{height:100%}
+/* Barras de scroll finas con los colores del tema (estándar CSS; sustituye a las de Windows con flechas). */
+*{scrollbar-width:thin;scrollbar-color:color-mix(in oklab,var(--ink-3) 55%,transparent) transparent}
 .app{height:100%;display:grid;grid-template-columns:76px minmax(0,1fr)}
 .rail{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 0;background:var(--surface);box-shadow:1px 0 0 var(--line);z-index:2}
 .brand{display:grid;place-items:center;width:56px;height:56px;margin-bottom:8px;border-radius:var(--r3);text-decoration:none}

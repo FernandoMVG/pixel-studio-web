@@ -31,12 +31,15 @@
 .banner{position:absolute;top:14px;left:50%;translate:-50% 0;z-index:4;display:flex;align-items:center;gap:12px;padding:10px 16px;border-radius:var(--r3);background:var(--agente-soft);color:var(--ink);box-shadow:0 0 0 1px color-mix(in oklab,var(--agente) 40%,transparent),var(--shadow-float);white-space:nowrap}
 .banner .live{width:8px;height:8px;background:var(--agente);box-shadow:0 0 0 0 var(--agente);animation:live 1.6s infinite}
 @keyframes live{70%{box-shadow:0 0 0 6px transparent}}
-.side{display:grid;align-content:start;gap:10px;padding:12px 12px 12px 0;overflow:auto;min-height:0}
+/* Paleta y vista previa fijas; el historial ocupa el resto y es lo único que se desplaza. x oculto: los globos de los tooltips lo ensanchaban. */
+.side{display:flex;flex-direction:column;gap:10px;padding:12px 12px 12px 0;overflow:hidden auto;min-height:0}
+.side>.panel{flex:none}
+.side>.panel-hist{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
 .pal-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;padding:0 6px 6px}
 .pal-grid .sw{width:100%;height:auto;aspect-ratio:1;min-height:40px}
 .prev-row{display:flex;align-items:flex-end;gap:16px;padding:6px 8px 10px;border-radius:var(--r2);background:repeating-conic-gradient(var(--check-a) 0 25%,var(--check-b) 0 50%) 0 0/8px 8px}
 .prev-row figure{margin:0;display:grid;gap:4px;justify-items:center;font-size:11px;color:var(--ink-3)}
-.hist{list-style:none;margin:0;padding:0;display:grid;gap:2px;max-height:260px;overflow:auto}
+.hist{list-style:none;margin:0;padding:0;display:grid;align-content:start;gap:2px;flex:1;min-height:0;overflow:auto}
 .hist li{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center;padding:7px 8px;border-radius:var(--r2);font-size:13px}
 .hist li:first-child{background:var(--sunken)}
 .who{width:8px;height:8px;background:var(--ink)}
