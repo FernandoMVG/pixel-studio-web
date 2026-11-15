@@ -16,6 +16,10 @@ export function describePatches(patches: Patch[]): string | null {
     else if (p.before && !p.after) labels.add(`Animación '${p.before.name}' borrada`);
     else if (p.before && p.after && p.before.name !== p.after.name) labels.add(`Animación '${p.before.name}' renombrada a '${p.after.name}'`);
     else if (p.before && p.after && p.before.frames.length === p.after.frames.length && p.before.fps !== p.after.fps) labels.add(`Velocidad de '${p.after.name}'`);
+    else if (p.before && p.after && p.before.frames.length === p.after.frames.length && p.before.holds.some((h, i) => h !== p.after!.holds[i])) {
+      const i = p.before.holds.findIndex((h, j) => h !== p.after!.holds[j]);
+      labels.add(`Duración del cuadro ${i + 1} de '${p.after.name}': ×${p.after.holds[i]}`);
+    }
     else if (p.after) labels.add(`Cuadros de '${p.after.name}'`);
   }
   const out = [...(first && px ? [`${plural(px, 'píxel', 'píxeles')}, ${first.animation}, cuadro ${first.frame + 1}`] : []), ...labels];

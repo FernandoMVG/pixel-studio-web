@@ -12,6 +12,14 @@ type Props = {
   play?: 'always' | 'hover' | false;
 };
 
+/** Cuadro que toca en el tic `tick`: cada cuadro se queda tantos tics como su duración. */
+function frameAt(holds: number[], tick: number) {
+  let t = tick % holds.reduce((a, b) => a + b, 0);
+  let i = 0;
+  while (t >= holds[i]!) t -= holds[i++]!;
+  return i;
+}
+
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export function Sprite({ project, animation, frame = 0, zoom: z = 4, size, play = false }: Props) {
@@ -39,7 +47,7 @@ export function Sprite({ project, animation, frame = 0, zoom: z = 4, size, play 
     return () => clearInterval(id);
   }, [playing, anim.fps]);
 
-  const index = playing ? tick % anim.frames.length : Math.min(play ? 0 : frame, anim.frames.length - 1);
+  const index = playing ? frameAt(anim.holds, tick) : Math.min(play ? 0 : frame, anim.frames.length - 1);
 
   useEffect(() => {
     const ctx = ref.current?.getContext('2d');

@@ -60,6 +60,13 @@
 .frame-acts{display:flex;gap:2px;align-self:center;margin-left:4px}
 .frame-acts .icon-btn{color:#c9cce6}
 .frame-acts .icon-btn:hover{background:rgb(255 255 255 / .12);color:#fff}
+.frame .hold{margin-left:3px;font-weight:700;color:var(--luz)}
+.frame[aria-current="true"] .hold{color:inherit}
+.hold-step{display:flex;align-items:center;gap:0;margin-right:4px;padding:0 2px;border-radius:var(--r2);box-shadow:inset 0 0 0 1px #3a3f66}
+.hold-step .icon-btn{font:600 16px var(--f-ui)}
+.hold-step output{min-width:28px;text-align:center;font:600 12px var(--f-data);color:#fff}
+.tl-total{padding-left:12px;box-shadow:inset 1px 0 0 var(--line);font-size:13px;color:var(--ink-2)}
+.tl-total b{font:600 13px var(--f-data);color:var(--ink)}
 .strip [data-tip]::before{display:none}
 
 /* diálogos del editor */
