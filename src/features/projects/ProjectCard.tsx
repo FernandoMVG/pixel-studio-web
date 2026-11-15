@@ -11,12 +11,14 @@ export function ProjectCard({ project, onDelete }: { project: Project; onDelete:
   const menu = useRef<HTMLDivElement>(null);
   const button = useRef<HTMLButtonElement>(null);
 
-  // el popover vive en la capa superior: se coloca bajo su botón al abrir
+  // El popover vive en la capa superior: se coloca bajo su botón al abrir, o encima si no cabe en la ventana.
   const place = (e: React.ToggleEvent<HTMLDivElement>) => {
     if (e.newState !== 'open') return;
     const b = button.current!.getBoundingClientRect();
     const m = menu.current!;
-    m.style.top = `${b.bottom + 4}px`;
+    const below = b.bottom + 4;
+    const fits = below + m.offsetHeight <= innerHeight - 8;
+    m.style.top = `${fits ? below : Math.max(8, b.top - 4 - m.offsetHeight)}px`;
     m.style.left = `${Math.max(8, b.right - m.offsetWidth)}px`;
   };
 
