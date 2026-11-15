@@ -16,7 +16,7 @@ import { PreviewPanel } from './PreviewPanel.tsx';
 import { ShortcutsDialog } from './ShortcutsDialog.tsx';
 import { Stage } from './Stage.tsx';
 import { Timeline } from './Timeline.tsx';
-import { moveCells, shiftRect, TOOLS, type Rect, type Tool } from './tools.ts';
+import { clampMove, moveCells, shiftRect, TOOLS, type Rect, type Tool } from './tools.ts';
 import { Tools } from './Tools.tsx';
 import type { Author, Cell, HistoryEntry, Send } from './types.ts';
 import './editor.css';
@@ -180,6 +180,8 @@ export function EditorScreen({ projectId }: { projectId: string }) {
   const nudge = (dx: number, dy: number, copy: boolean) => {
     const rows = anim?.frames[frameIdx];
     if (!anim || !rows || !sel || pending) return;
+    ({ dx, dy } = clampMove(rows, sel, dx, dy));
+    if (!dx && !dy) return;
     const cells = moveCells(rows, sel, dx, dy, copy);
     setSel(shiftRect(sel, dx, dy, project!.width, project!.height));
     if (cells.length) void send([{ type: 'setPixels', animation: anim.name, frame: frameIdx, pixels: cells }]);

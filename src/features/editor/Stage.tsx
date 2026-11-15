@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react';
 import type { Animation, Frame, Project } from '@api';
 import { fillCells, paintCells } from './patches.ts';
-import { inRect, lineCells, moveCells, rectBetween, rectCells, shiftRect, type Rect, type Tool } from './tools.ts';
+import { clampMove, inRect, lineCells, moveCells, rectBetween, rectCells, shiftRect, type Rect, type Tool } from './tools.ts';
 import type { Cell, Draft, Send } from './types.ts';
 
 type Props = {
@@ -109,7 +109,7 @@ export function Stage({ project, anim, frame, tool, color, zoom, grid, onion, fl
       const p = cellAt(e, true)!;
       if (s.mode === 'marquee') onSel(rectBetween(s.start, p));
       else if (sel) {
-        const dx = p.x - s.start.x, dy = p.y - s.start.y;
+        const { dx, dy } = clampMove(rows, sel, p.x - s.start.x, p.y - s.start.y);
         setOffset({ dx, dy });
         show(moveCells(rows, sel, dx, dy, s.copy));
       }

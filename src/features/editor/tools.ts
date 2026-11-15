@@ -54,7 +54,7 @@ export function shiftRect(r: Rect, dx: number, dy: number, w: number, h: number)
 
 /**
  * Celdas que cambian al mover (o copiar) los píxeles opacos de `r` en (dx, dy).
- * Los huecos transparentes no tapan el destino; lo que sale del lienzo se pierde.
+ * Los huecos transparentes no tapan el destino. Usar con un desplazamiento de `clampMove` para no perder píxeles.
  */
 export function moveCells(rows: readonly string[], r: Rect, dx: number, dy: number, copy: boolean): Cell[] {
   const h = rows.length, w = rows[0]?.length ?? 0;
@@ -66,4 +66,15 @@ export function moveCells(rows: readonly string[], r: Rect, dx: number, dy: numb
   if (!copy) for (const s of src) put(s.x, s.y, '.');
   for (const s of src) put(s.x + dx, s.y + dy, s.color);
   return [...out.values()].filter((c) => rows[c.y]![c.x] !== c.color);
+}
+
+/** Limita (dx, dy) para que los píxeles opacos de `r` no salgan del lienzo. */
+export function clampMove(rows: readonly string[], r: Rect, dx: number, dy: number) {
+  const h = rows.length, w = rows[0]?.length ?? 0;
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (let y = Math.max(0, r.y0); y <= Math.min(h - 1, r.y1); y++)
+    for (let x = Math.max(0, r.x0); x <= Math.min(w - 1, r.x1); x++)
+      if (rows[y]![x] !== '.') { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  if (x0 === Infinity) return { dx, dy };
+  return { dx: Math.min(w - 1 - x1, Math.max(-x0, dx)), dy: Math.min(h - 1 - y1, Math.max(-y0, dy)) };
 }
